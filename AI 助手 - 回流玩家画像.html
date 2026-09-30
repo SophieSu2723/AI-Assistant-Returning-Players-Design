@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI 助手 · 回流场景 · 设计文档 v4</title>
+<style>
+:root{
+  --canvas:#E9E9E6; --surface:#FFFFFF; --wash:#F6F6F4;
+  --ink:#1A1A1C; --ink2:#6B6B6E; --ink3:#A3A39F;
+  --line:#E4E4E1; --line2:#D5D5D1;
+  --seal:#C4442E; --seal-soft:#FBEEEB;
+  --jade:#2E6B5C; --jade-soft:#EBF3F0;
+  --d1:#B26B85; --d1-bg:#F7E9EE;
+  --d2:#6B87B2; --d2-bg:#E5ECF7;
+  --d3:#6B9B84; --d3-bg:#E3EFE8;
+  --d4:#A89660; --d4-bg:#F4F0E0;
+  --meta:#8A8778; --meta-bg:#F3F1E8;
+  --keep:#5B8A72; --watch:#B8863B; --remeas:#B5605A;
+  --keep-bg:#E8F0EA; --watch-bg:#F6EEDC; --remeas-bg:#F6E5E3;
+  --font-body:"Inter","Noto Sans SC",-apple-system,sans-serif;
+  --font-display:"Noto Serif SC",serif;
+  --font-mono:"JetBrains Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--canvas);font-family:var(--font-body);color:var(--ink);line-height:1.85;
+  -webkit-font-smoothing:antialiased;padding:60px 20px}
+.doc{max-width:820px;margin:0 auto;background:var(--surface);border-radius:6px;
+  box-shadow:0 1px 2px rgba(0,0,0,.06),0 18px 50px rgba(0,0,0,.10);padding:76px 84px 90px}
+@media(max-width:680px){body{padding:24px 10px}.doc{padding:44px 26px}}
+
+.eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;color:var(--ink3);
+  text-transform:uppercase;margin-bottom:20px}
+h1{font-family:var(--font-display);font-size:44px;font-weight:600;line-height:1.24;letter-spacing:-.01em}
+.lede{font-size:16px;color:var(--ink2);line-height:1.85;margin:20px 0 6px}
+.claim{font-family:var(--font-display);font-size:19px;font-weight:500;line-height:1.72;color:var(--ink);
+  border-left:3px solid var(--seal);padding-left:22px;margin:24px 0 10px}
+.meta{font-family:var(--font-mono);font-size:12px;color:var(--ink3);letter-spacing:.03em;margin-top:26px;
+  padding-top:18px;border-top:1px solid var(--line);line-height:2}
+
+h2{font-family:var(--font-display);font-size:28px;font-weight:600;line-height:1.35;margin:66px 0 4px;
+  padding-top:30px;border-top:1px solid var(--line)}
+h2 .n{font-family:var(--font-mono);font-size:13px;font-weight:400;color:var(--seal);
+  letter-spacing:.1em;display:block;margin-bottom:8px}
+h3{font-size:19px;font-weight:600;margin:34px 0 8px;line-height:1.5}
+h4{font-size:15.5px;font-weight:600;margin:24px 0 4px}
+p{font-size:15.5px;color:#2C2C2E;margin:12px 0}
+strong{font-weight:600;color:var(--ink)}
+em{font-style:normal;color:var(--seal);font-weight:500}
+ul,ol{margin:12px 0 12px 4px;padding-left:24px}
+li{font-size:15.5px;color:#2C2C2E;margin:7px 0}
+li strong{color:var(--ink)}
+.mono{font-family:var(--font-mono)}
+
+.callout{background:var(--seal-soft);border:1px solid #F0D3CD;border-radius:8px;padding:16px 22px;margin:22px 0;
+  font-size:15.5px;line-height:1.8}
+.callout.jade{background:var(--jade-soft);border-color:#CFE3DC}
+.callout.plain{background:var(--wash);border-color:var(--line)}
+.callout .t{font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--seal);margin-bottom:6px}
+.callout.jade .t{color:var(--jade)}
+.callout.plain .t{color:var(--ink3)}
+.line{font-family:var(--font-display);font-size:18px;font-weight:500;color:var(--ink);
+  line-height:1.7;margin:16px 0;padding-left:20px;border-left:2px solid var(--seal)}
+
+/* 引证带 */
+.cite{font-size:12.5px;color:var(--ink3);line-height:1.75;border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);padding:10px 0;margin:24px 0}
+.cite b{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.1em;color:var(--ink3);
+  text-transform:uppercase;font-weight:400;margin-right:10px}
+
+table{width:100%;border-collapse:collapse;font-size:14px;margin:22px 0}
+th{font-family:var(--font-mono);font-size:11px;font-weight:400;letter-spacing:.05em;color:var(--ink3);
+  text-align:left;padding:0 14px 9px 0;border-bottom:1.5px solid var(--line2);text-transform:uppercase;vertical-align:bottom}
+td{padding:11px 14px 11px 0;border-bottom:1px solid var(--line);color:var(--ink2);vertical-align:top;line-height:1.65}
+td:first-child,th:first-child{color:var(--ink);font-weight:500}
+tr:last-child td{border-bottom:none}
+td strong{color:var(--seal)}
+.tbl-scroll{overflow-x:auto;margin:22px 0}
+.tbl-scroll table{margin:0;min-width:520px}
+
+pre{background:#1A1A1C;border-radius:8px;padding:20px 22px;overflow-x:auto;margin:18px 0;line-height:1.7}
+pre code{font-family:var(--font-mono);font-size:13px;color:#E4E4E1;white-space:pre;display:block}
+.cmt{color:#807A73}.key{color:#8FB8AE}.val{color:#E6C07B}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:18px 0}
+@media(max-width:680px){.two{grid-template-columns:1fr}}
+.two pre{margin:0;height:100%}
+.caption{font-size:13px;color:var(--ink2);font-family:var(--font-display);margin:2px 0 20px;font-style:italic}
+
+.diagram{background:var(--wash);border:1px solid var(--line);border-radius:10px;padding:24px;margin:22px 0;overflow-x:auto}
+.diagram svg{display:block;margin:0 auto}
+.dcap{font-size:12.5px;color:var(--ink3);font-family:var(--font-mono);text-align:center;margin-top:8px;letter-spacing:.02em}
+
+.toc{background:var(--wash);border:1px solid var(--line);border-radius:8px;padding:20px 26px;margin:32px 0 0;
+  font-size:14px;columns:2;column-gap:34px}
+@media(max-width:680px){.toc{columns:1}}
+.toc a{color:var(--ink2);text-decoration:none;display:block;padding:4px 0;break-inside:avoid}
+.toc a:hover{color:var(--seal)}
+.toc .num{font-family:var(--font-mono);color:var(--seal);font-size:12px;margin-right:8px}
+
+.foot{margin-top:66px;padding-top:22px;border-top:1px solid var(--line);font-size:13px;color:var(--ink3);
+  font-family:var(--font-mono);letter-spacing:.02em;line-height:2}
+
+/* ===== 画像 Schema 卡 ===== */
+.sch{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:22px 0}
+@media(max-width:680px){.sch{grid-template-columns:1fr}}
+.sc{border:1px solid var(--line);border-radius:10px;padding:16px 18px 12px;background:#fff}
+.sc.meta-c{grid-column:1/-1;background:var(--meta-bg);border-color:#E4E0D2}
+.sc-h{display:flex;align-items:baseline;gap:8px;margin-bottom:10px}
+.sc-h .dot{width:7px;height:7px;border-radius:50%;flex:none;position:relative;top:-2px}
+.sc-h b{font-family:var(--font-display);font-size:16px;font-weight:600}
+.sc-h .job{margin-left:auto;font-size:11px;color:var(--ink3);font-family:var(--font-mono)}
+.sc table{margin:0;font-size:13px}
+.sc td{padding:7px 10px 7px 0;line-height:1.5}
+.sc th{padding-bottom:7px}
+.sp{font-size:11px;padding:1px 8px;border-radius:999px;white-space:nowrap}
+.sp.k{background:var(--keep-bg);color:var(--keep)}
+.sp.m{background:var(--watch-bg);color:var(--watch)}
+.sp.f{background:var(--remeas-bg);color:var(--remeas)}
+
+/* ===== 样本对照卡 ===== */
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:22px 0}
+@media(max-width:680px){.cmp{grid-template-columns:1fr}}
+.pc{border:1px solid var(--line);border-radius:12px;padding:20px 22px;background:#fff}
+.pc-n{font-family:var(--font-display);font-size:20px;font-weight:600;margin-bottom:2px}
+.pc-d{font-size:12.5px;color:var(--ink3);margin-bottom:14px;line-height:1.6}
+.pr{padding:9px 0;border-top:1px solid var(--line)}
+.pr:first-of-type{border-top:0;padding-top:0}
+.pr .lb{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--ink3);
+  font-family:var(--font-mono);letter-spacing:.02em}
+.pr .lb i{width:7px;height:7px;border-radius:50%;flex:none;font-style:normal}
+.pr .vl{font-size:15px;color:var(--ink);font-weight:500;margin-top:3px}
+.pr .vl s{text-decoration:none;color:var(--seal);font-weight:600}
+.bub{background:#22201E;color:#F0E4CE;border-radius:12px;padding:14px 18px;margin:14px 0;
+  font-size:14.5px;line-height:1.8;border:1px solid #3A3733}
+.bub .who{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.1em;color:#8A8378;
+  text-transform:uppercase;margin-bottom:5px}
+
+/* ===== 内联衰变演示 ===== */
+.dw{background:var(--wash);border:1px solid var(--line);border-radius:12px;padding:22px 24px 20px;margin:26px 0}
+.dw-h{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.dw-h .t{font-family:var(--font-display);font-size:17px;font-weight:600}
+.dw-h .s{font-family:var(--font-mono);font-size:11.5px;color:var(--ink3)}
+.dw-read{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;margin-bottom:10px}
+.dw-read .lab{font-size:12.5px;color:var(--ink2)}
+.dw-read .num{font-family:var(--font-display);font-size:34px;line-height:1;font-weight:600;font-variant-numeric:tabular-nums}
+.dw-read .un{font-size:12.5px;color:var(--ink2)}
+.dw-read .agg{margin-left:auto;font-family:var(--font-mono);font-size:12px;color:var(--ink2);font-variant-numeric:tabular-nums}
+.dw input[type=range]{-webkit-appearance:none;appearance:none;width:100%;background:transparent;display:block;margin:0}
+.dw input[type=range]::-webkit-slider-runnable-track{height:3px;background:var(--line2);border-radius:2px}
+.dw input[type=range]::-moz-range-track{height:3px;background:var(--line2);border-radius:2px}
+.dw input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;
+  background:#fff;border:1.5px solid var(--ink);margin-top:-9px;cursor:grab}
+.dw input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#fff;
+  border:1.5px solid var(--ink);cursor:grab}
+.dw input[type=range]:focus-visible{outline:2px solid var(--d2);outline-offset:6px;border-radius:3px}
+.dw-scale{display:flex;justify-content:space-between;margin-top:6px;font-size:10.5px;color:var(--ink3);
+  font-family:var(--font-mono)}
+.dw-ctl{display:flex;gap:7px;flex-wrap:wrap;margin-top:16px;align-items:center}
+.dw-ctl button{font-family:var(--font-body);font-size:12.5px;padding:5px 14px;border-radius:999px;cursor:pointer;
+  border:1px solid var(--line2);background:#fff;color:var(--ink2);transition:.15s}
+.dw-ctl button:hover{border-color:var(--ink3);color:var(--ink)}
+.dw-ctl button:focus-visible{outline:2px solid var(--d2);outline-offset:2px}
+.dw-ctl button.on{border-color:var(--ink);color:var(--ink)}
+.dw-ctl button.act{margin-left:auto;border-color:var(--keep);color:var(--keep)}
+.dw-ctl button.act:hover{background:var(--keep-bg)}
+.dw-tally{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0 16px}
+.dw-tally div{border-radius:9px;padding:10px 14px}
+.dw-tally .a{background:var(--keep-bg)}.dw-tally .b{background:var(--watch-bg)}.dw-tally .c{background:var(--remeas-bg)}
+.dw-tally span{display:block;font-size:11.5px;color:var(--ink2)}
+.dw-tally b{font-family:var(--font-display);font-size:23px;font-weight:600;font-variant-numeric:tabular-nums}
+.dw-tally .a b{color:var(--keep)}.dw-tally .b b{color:var(--watch)}.dw-tally .c b{color:var(--remeas)}
+.dw-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:680px){.dw-grid{grid-template-columns:1fr}.dw-tally{grid-template-columns:1fr}}
+.dw-dim{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 16px 10px}
+.dw-dim.mt{grid-column:1/-1;background:var(--meta-bg);border-color:#E4E0D2}
+.dw-dh{display:flex;align-items:baseline;gap:8px;margin-bottom:8px}
+.dw-dh i{width:7px;height:7px;border-radius:50%;flex:none;position:relative;top:-2px;font-style:normal}
+.dw-dh b{font-family:var(--font-display);font-size:15px;font-weight:600}
+.dw-dh span{margin-left:auto;font-size:10.5px;color:var(--ink3);font-family:var(--font-mono)}
+.dw-r{display:grid;grid-template-columns:84px minmax(0,1fr) 38px 56px;align-items:center;gap:9px;
+  padding:5px 0;border-top:1px solid #F1F0EC}
+.dw-r:first-of-type{border-top:0}
+.dw-r .nm{font-size:12.5px}
+.dw-r .nm i{font-style:normal;font-size:10px;color:var(--ink3);margin-left:4px}
+.dw-tk{height:6px;border-radius:3px;background:#EDECE8;overflow:hidden}
+.dw-fl{display:block;height:6px;border-radius:3px;transition:width .18s ease,background .18s ease}
+.dw-pc{font-size:11px;color:var(--ink3);text-align:right;font-variant-numeric:tabular-nums}
+.dw-tg{font-size:10px;text-align:center;padding:2px 0;border-radius:999px}
+.dw-tg.k{background:var(--keep-bg);color:var(--keep)}
+.dw-tg.m{background:var(--watch-bg);color:var(--watch)}
+.dw-tg.f{background:var(--remeas-bg);color:var(--remeas)}
+.dw-r.fresh{outline:1.5px solid var(--keep);outline-offset:2px;border-radius:4px}
+.dw-note{margin-top:14px;font-size:12px;color:var(--ink3);line-height:1.9}
+.dw-note b{color:var(--ink2);font-weight:500}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="doc">
+
+<div class="eyebrow">游戏体验设计 · 设计文档 · V4</div>
+<h1>AI 助手 · 回流场景</h1>
+
+<p class="lede">回流玩家面临的问题，并不只是「离开太久、进度落后」。更本质的原因是：玩家离开后，构成其画像的不同信息正在以不同速度发生变化。</p>
+
+<p class="lede">有些特征相对稳定，例如长期偏好的玩法、内容类型与表达方式；有些状态则可能快速变化，例如当前目标、时间余量、操作熟练度与社交意愿。因此，回流体验不能只依靠统一的资源补偿。系统需要保留相对稳定的长期偏好，同时通过新的行为与轻量交互，重新确认已经发生变化的状态。</p>
+
+<p class="claim">真正的个性化，也不只是向不同玩家推荐不同内容，而是让玩家画像决定：系统先了解什么、何时介入、提供哪些选择，以及如何组织整条回流路径。</p>
+
+<p class="lede">本文档将围绕回流场景，定义 AI 助手的玩家模型、体验编排机制与交互方案，并进一步说明系统的能力边界、判断系统是否收敛的标准，以及如何将该方案迁移到不同类型的游戏中。方案以《燕云十六声》的回流场景作为案例，但底层模型不依赖该游戏的具体玩法与内容。</p>
+
+<div class="meta">
+场景　回流玩家重新进入游戏后的首段体验<br>
+样本　阿枝（面向他人）· 阿霁（面向成果）<br>
+平台　AI 体验助手 · 全局在线 / 意图交互 / 任务代劳 / 情感共鸣
+</div>
+
+<div class="toc">
+  <a href="#s01"><span class="num">01</span>断层的重新定义</a>
+  <a href="#s02"><span class="num">02</span>设计目标：保持画像有效</a>
+  <a href="#s03"><span class="num">03</span>玩家画像：四个体验维度与元维度</a>
+  <a href="#s04"><span class="num">04</span>条目级多速衰变</a>
+  <a href="#s05"><span class="num">05</span>动态编排</a>
+  <a href="#s06"><span class="num">06</span>五种运算与工作流</a>
+  <a href="#s07"><span class="num">07</span>信号探测与写回权限</a>
+  <a href="#s08"><span class="num">08</span>表达层与算法边界</a>
+  <a href="#s09"><span class="num">09</span>全流程交互方案</a>
+  <a href="#s10"><span class="num">10</span>边界与兜底</a>
+  <a href="#s11"><span class="num">11</span>收敛判据与稳定性</a>
+  <a href="#s12"><span class="num">12</span>泛化：三层架构</a>
+  <a href="#s13"><span class="num">13</span>验证与待定项</a>
+</div>
+
+
+<h2 id="s01"><span class="n">01 / PREMISE</span>断层的重新定义</h2>
+
+<h3>传统认知：断层等于时间流逝，因而按旧标签补资源</h3>
+<p>现有回流机制通常建立在同一个判断上：玩家离开期间，游戏持续更新，而玩家的进度停留在离开时，两者之间因此产生落差。基于这一判断，常见的处置手段也较为一致——补发资源、提供经验加成、开放追赶任务，或通过限时奖励引导玩家重新投入。其中「玩法推荐」看似提供了个性化体验，但推荐所依据的，通常仍是玩家离开时留下的历史标签。</p>
+<p>这套机制默认了一个未被言明的前提：<strong>游戏发生了变化，但玩家没有变化。</strong>系统将离开时的画像保存下来，并在玩家回归时直接继续使用。画像越精确，推荐就越可能准确地指向过去的玩家，而不是现在的玩家。<strong>问题并不在于系统是否提供了个性化，而在于这份个性化建立在一份已经过期的画像上。</strong></p>
+
+<h3>进度补齐，并不能消除断层</h3>
+<p>如果回流断层只是进度落后，那么在资源补齐、等级追平之后，问题就应该随之结束。但在实际体验中，即使玩家已经领取奖励、恢复资源，仍可能在短时间内再次离开。这说明被补齐的只是进度，而不是全部断层——除游戏进度之外，还有一部分差异没有被系统识别和处理。</p>
+
+<h3>新定义：画像没有跟上玩家</h3>
+<p>玩家离开期间，发生变化的不只是游戏。玩家的可支配时间、操作熟练度、内容偏好、审美取向与社交关系，都可能已经不同。现有机制更新了游戏内容，却继续沿用过去对玩家的理解。</p>
+
+<div class="callout">
+  <div class="t">Definition</div>
+  <strong>断层，是系统持有的画像与玩家当前状态之间的失配。</strong>时间流逝可能造成这种失配，但时间本身并不是断层。进度落后只是失配在数值层面的表现，也是最容易通过补偿解决的一部分。真正需要解决的，不只是让玩家追上游戏，而是让系统对玩家的理解重新追上玩家。
+</div>
+
+<p class="line">目标不是把玩家追上进度，而是把画像追上玩家。</p>
+
+<h3>上下文的双向性</h3>
+<p>回流玩家丢失的不只是资源，更是上下文；资源可以广播补发，上下文只能逐人重建。这种上下文具有双向性：一方面，玩家可能已经记不清自己离开前在做什么、为什么做，以及接下来原本准备去哪里；另一方面，系统所保存的「这个玩家是谁」，也可能已经不再准确。</p>
+<p class="line">系统保存着过去的玩家，玩家带回了现在的自己。两者无法对应，就形成了断层。</p>
+<p>如果只将上下文理解为玩家忘记了游戏内容，那么系统最终仍会回到任务回顾、进度提示与旧目标续接，即回到旧定义。<strong>本方案与传统回流机制的区别在于：它不仅帮助玩家重新理解游戏，也要求系统重新理解玩家。</strong></p>
+
+<h3>回流是一种行为，断层是一种状态</h3>
+<p>基于这一新定义，系统是否介入，不应只由离线时长决定。离开三个月的玩家，其目标与偏好可能没有明显变化；持续登录的玩家，也可能因为时间安排、关系状态或兴趣转移，与原有画像产生明显失配。</p>
+<p class="line">回流描述的是玩家重新进入游戏的行为；断层描述的是玩家与既有画像之间的状态。</p>
+
+<h3>单次行为，无法代表当前玩家</h3>
+<p>系统也不能在玩家回归后，仅凭第一次点击或第一次选择，就立即重建画像。一次行为通常同时受到三类因素影响：</p>
+<ul>
+  <li><strong>玩家发生了变化</strong>——她现在真正想要的内容可能已经不同；</li>
+  <li><strong>游戏发生了变化</strong>——新版本、新入口与新规则改变了她的选择；</li>
+  <li><strong>登录诱因产生了影响</strong>——召回通知、回流奖励或活动内容引导了她的首次行动。</li>
+</ul>
+<p>因此，一次点击并不能直接说明玩家的真实偏好。例如玩家进入某个新玩法，可能是因为她对此产生了兴趣，也可能只是因为该入口被放在首页，或者领取奖励必须经过这里。</p>
+<p>系统既不能默认旧画像仍然有效，也不能因为一次新行为就立刻推翻旧画像。它需要通过后续多次行为，逐步区分：哪些是长期偏好的延续；哪些是玩家状态发生了变化；哪些只是版本环境或短期诱因造成的暂时行为。由此，回流体验不再是一次性的「找回进度」，而是一个逐步验证、校准并更新玩家画像的过程。</p>
+
+<h3>设计结论</h3>
+<p>回流断层的本质，不是玩家离开了多久，而是系统对玩家的理解还停留在多久以前。因此本方案的设计目标不是统一地将玩家送回原有路径，而是先判断哪些理解仍然有效、哪些已经过期，再决定如何组织接下来的回流体验。</p>
+<p class="line">不是让玩家回到过去的位置，而是让系统重新找到现在的玩家。</p>
+
+<div class="cite"><b>Ref · 合法性</b> 用户信号本身混合了持久偏好与瞬时行为，二者时间尺度不同；不加区分地一并采信，必然被瞬时噪声带偏。这一点在近期 agentic 推荐系统的综述中被列为共性问题——上述「单次行为无法代表当前玩家」并非本场景特有，而是用户建模的共性困难。</div>
+
+
+<h2 id="s02"><span class="n">02 / OBJECTIVE</span>设计目标：保持画像有效</h2>
+
+<p>断层期内，系统的首要目标不是使玩家留下，而是<strong>缩小系统画像与玩家当前状态之间的失配</strong>。其可度量的代理量为画像时效，即各条目当前是否仍然成立的汇总判断。</p>
+
+<p>例如，系统过去认为玩家偏爱高难挑战，但她现在可能只想利用碎片时间推进剧情；她过去经常与固定队友组队，现在的社交关系也可能已经发生变化。只有先确认这些判断是否仍然成立，系统才有条件组织合适的回流体验。</p>
+
+<h4>为什么不直接以留存为目标</h4>
+<p>若将留存设为设计目标，系统会迅速滑向限时奖励、强提醒与高频召回——这些是提升短期留存最直接的手段。但在画像已经失配的阶段，它们并不修复失配：系统仍然不知道玩家现在想要什么，只是把不确定的推荐推得更频繁。其代价由玩家承担，表现为被打扰感与对系统判断的不信任，而这恰恰是回流首段体验中最不可逆的损失。</p>
+<p>以画像有效性为目标，则意味着系统必须在证据不足时收敛表达强度，在判断恢复之后再提高主动程度。<strong>留存不作为目标，但作为结果被观测。</strong></p>
+
+<h4>留存在因果链中的位置</h4>
+<p>本方案不否认留存的价值，而是重新界定其位置：</p>
+<p class="line">画像追上玩家 → 编排出合适的体验 → 玩家产生被理解感 → 形成继续参与的意愿</p>
+<p>留存因此是系统正确理解并回应玩家之后产生的结果，不是系统可以直接索取的行为。奖励可以促使玩家回来，理解才能使玩家愿意留下。</p>
+
+<h4>收敛条件</h4>
+<p>需特别指出：<strong>这一目标不存在一个「达成」时刻。</strong>各条目在系统运行期间持续衰变，测量则是离散发生的，因此失配量始终大于零。收敛条件不是失配归零，而是重测速度不低于衰变速度。该判据在第 11 章展开。</p>
+
+<div class="callout jade">
+  <div class="t">Mechanism</div>
+  <strong>既承接，也重测。</strong>承接指对仍然成立的慢变条目直接沿用，使玩家一回到游戏即可感到系统仍然认得自己；重测指对已经过期的快变条目不予沿用，而是主动排出一条路径将其重新测定。两者不是修辞上的并列，而是由条目衰变速度直接决定的两类处置。
+</div>
+
+
+<h2 id="s03"><span class="n">03 / SCHEMA</span>玩家画像：四个体验维度与元维度</h2>
+
+<p>本方案在结构上遵循 agentic 推荐系统的通用组件分解，即画像、记忆、工具使用、工作流与优化五部分。本章处理其中的画像部分，并在其上补充一个用于自我评估的元维度。</p>
+
+<h3>四个体验维度</h3>
+<p>玩家所感受到的「体验断层」并非单一现象，而是落在游戏的不同系统之上：</p>
+<ul>
+  <li>打不动了、连招忘了、新系统看不懂 → <strong>玩法断层</strong></li>
+  <li>一身旧外观、当季流行已经改变 → <strong>表达断层</strong></li>
+  <li>赛季进度落后、可投入时间改变、其他人已跑远 → <strong>节奏断层</strong></li>
+  <li>帮派解散、常一起玩的人不在了 → <strong>关系情感断层</strong></li>
+</ul>
+<p>四者感受不同、可观测的数据不同，<strong>恢复的速度也不同</strong>。维度划分因此不是对游戏内容的分类，而是对断层分面的划分——这是第 12 章泛化论证的基础。</p>
+
+<h4>准入标准</h4>
+<p>一个维度成立，须同时满足三条：</p>
+<ol>
+  <li>对应一种玩家能够独立感受到的断层；</li>
+  <li>挂载于游戏中可独立观测的系统；</li>
+  <li>恢复速度与其他维度不同。</li>
+</ol>
+<p>该标准同时是维度集合的可扩展性依据：若某个编排决定无法由现有维度中的任何一个回答，则应新增；若两个维度总是同步变化，则应合并。</p>
+
+<h3>元维度：系统对自己的判断有多大把握</h3>
+<p>四个体验维度描述的是玩家本身，元维度描述的则是系统如何看待自己的判断：</p>
+<ul>
+  <li>当前画像是否仍然可信；</li>
+  <li>是否需要重新测量；</li>
+  <li>系统可以表达得多确定；</li>
+  <li>当前适合提示、询问，还是主动编排；</li>
+  <li>新行为是否足以写回画像。</li>
+</ul>
+<p>元维度不回答「哪里接不上」，而回答「是否应当介入、介入多深」。它的轴向与四个体验维度不同，<strong>因此不能与之并列——它位于四维之上，负责管理这四个维度的使用方式。</strong></p>
+
+<div class="callout plain">
+  <div class="t">Derivation</div>
+  通用组件分解将<strong>画像</strong>与<strong>记忆</strong>分列为两个组件：前者是系统对玩家的表征，后者是系统对该表征的管理。本方案沿用这一分层，将「系统对自身判断的把握程度」自画像内容中析出，构成元维度。<br><br>
+  <span style="color:var(--ink3);font-size:14px">须明确：文献支持的是「信号存在不同时间尺度、必须区别对待，且当前未被妥善处理」，以及上述组件分层。文献并未主张玩家画像应分为此四维，亦未提出元维度这一构造。四维的依据是上述三条准入标准，元维度的依据是其轴向不同。上游提供方向，下游为本方案的推进。</span>
+</div>
+
+<h3>Schema 全表</h3>
+<p>四维共 16 条，元维度 2 条。衰变档位为设计判断，具体参数待接入后校准。</p>
+
+<div class="sch">
+
+  <div class="sc">
+    <div class="sc-h"><span class="dot" style="background:var(--d3)"></span><b>玩法 WHAT</b><span class="job">匹配 · 给什么</span></div>
+    <table>
+      <tr><th>条目</th><th>观测信号</th><th>衰变</th></tr>
+      <tr><td>内容类型</td><td>各类内容时长占比、主动进入次数</td><td><span class="sp k">慢</span></td></tr>
+      <tr><td>难度偏好</td><td>主动挑战高难比例、失败后是否重试</td><td><span class="sp f">快</span></td></tr>
+      <tr><td>目标驱动</td><td>接取任务后直线抵达或中途偏离</td><td><span class="sp m">中</span></td></tr>
+      <tr><td>合作偏好</td><td>组队时长占比、是否主动发起</td><td><span class="sp m">中</span></td></tr>
+    </table>
+  </div>
+
+  <div class="sc">
+    <div class="sc-h"><span class="dot" style="background:var(--d2)"></span><b>节奏 WHEN</b><span class="job">过滤 · 给多少</span></div>
+    <table>
+      <tr><th>条目</th><th>观测信号</th><th>衰变</th></tr>
+      <tr><td>单次时长</td><td>单次在线时长分布</td><td><span class="sp f">快</span></td></tr>
+      <tr><td>打扰容忍度</td><td>主动关闭提示频率、免打扰设置</td><td><span class="sp f">快</span></td></tr>
+      <tr><td>任务密度</td><td>同时挂载任务数、单次完成量</td><td><span class="sp m">中</span></td></tr>
+      <tr><td>推进方式</td><td>是否完成当前才接下一个</td><td><span class="sp k">慢</span></td></tr>
+    </table>
+  </div>
+
+  <div class="sc">
+    <div class="sc-h"><span class="dot" style="background:var(--d1)"></span><b>关系情感 WHO</b><span class="job">索引 · 借哪个场景</span></div>
+    <table>
+      <tr><th>条目</th><th>观测信号</th><th>衰变</th></tr>
+      <tr><td>对象偏好</td><td>共同在线时长、组队对象集中度</td><td><span class="sp k">慢·可失效</span></td></tr>
+      <tr><td>陪伴需求</td><td>独自游戏时长占比</td><td><span class="sp m">中</span></td></tr>
+      <tr><td>回应敏感度</td><td>对系统回应的接受率、追问率</td><td><span class="sp m">中</span></td></tr>
+      <tr><td>关系驱动</td><td>好友在线与登录行为的相关性</td><td><span class="sp k">慢</span></td></tr>
+    </table>
+  </div>
+
+  <div class="sc">
+    <div class="sc-h"><span class="dot" style="background:var(--d4)"></span><b>表达 HOW</b><span class="job">渲染 · 怎么说</span></div>
+    <table>
+      <tr><th>条目</th><th>观测信号</th><th>衰变</th></tr>
+      <tr><td>表达主动性</td><td>主动开启对话比例</td><td><span class="sp m">中</span></td></tr>
+      <tr><td>表达长度</td><td>单条输入字数中位数</td><td><span class="sp k">慢</span></td></tr>
+      <tr><td>交互方式</td><td>点选、打字、语音各自占比</td><td><span class="sp k">慢</span></td></tr>
+      <tr><td>情绪外显</td><td>情绪词、语气词、标点强度</td><td><span class="sp k">慢</span></td></tr>
+    </table>
+  </div>
+
+  <div class="sc meta-c">
+    <div class="sc-h"><span class="dot" style="background:var(--meta)"></span><b>元维度 IF</b><span class="job">准入 · 该不该说</span></div>
+    <table>
+      <tr><th>条目</th><th>来源</th><th>作用</th></tr>
+      <tr><td>时效</td><td>各条目新鲜度的汇总计算</td><td><strong>排序依据</strong>——时效最低者优先进入重测</td></tr>
+      <tr><td>成熟度</td><td>有效交互量累积，不随时间衰变</td><td><strong>制动</strong>——把握不足时不主动编排，只承接</td></tr>
+    </table>
+    <p style="font-size:13px;color:var(--ink2);margin:10px 0 0">流失时长为客观记录，不参与衰变，其作用是<strong>触发器</strong>：决定哪些条目被标记为可疑。元维度不产生自身数据，它是对四维状态的汇总判断，因此位于其上一层。<strong>成熟度是「帮忙不越界」在数据层的落点</strong>：把握不足时，系统收敛为承接与观察。</p>
+  </div>
+
+</div>
+
+<h4>字段拆分原则</h4>
+<p>一个字段只承载一条独立变化的信息。当某字段内部包含两条会各自独立更新的子信息（时效、方向或所属运算不同）时，应拆分为两个字段，以保证各自可被独立读取与更新。拆分粒度由信息结构决定，不预先设定；条目数量随游戏与场景变化，不属于固定清单。</p>
+
+
+<h2 id="s04"><span class="n">04 / DECAY</span>条目级多速衰变</h2>
+
+<p>画像并非整体失效，而是逐条以各自的速度失效。<strong>衰变的单位是条目，不是维度。</strong></p>
+
+<h3>同一维度内部的速度分裂</h3>
+<p>这一点最直接的证据出现在玩法维度内部：内容类型属最慢的一档，难度偏好属最快的一档。玩家离开一段时间后，她仍然偏好探索与外观，这一判断大概率仍然成立；但她能承受的战斗难度，几乎必然已经下降。<strong>同一维度之内，一条仍可沿用，另一条已须重测。</strong>据此，任何以维度为单位的统一处置——统一沿用或统一清空——都必然出错。</p>
+
+<h3>衰变模型</h3>
+<p class="line">置信度 = 0.5 <sup>流失天数 ÷ 半衰期</sup></p>
+<p>每个条目只有半衰期一个参数，其余全部由它推出。不设特殊值：不随时间失效的信息以极长半衰期表达，无需另立分支。据此产生三档判定——可直接沿用、需观察确认、必须重测。</p>
+
+<p><strong>同一条分界线承担两个方向的判定：</strong>衰变过程中跌破该线，条目降级为待重测；证据累积过程中跨过该线，允许写回画像。全系统只维持一套标准。分界的具体取值属待校准参数，下方演示中的取值仅为示意。</p>
+
+<div class="dw">
+  <div class="dw-h">
+    <span class="t">画像置信度随流失时长的衰变</span>
+    <span class="s">样本：阿霁 · 可拖动</span>
+  </div>
+  <div class="dw-read">
+    <span class="lab">流失时长</span>
+    <span class="num" id="dayOut">97</span>
+    <span class="un">天</span>
+    <span class="agg" id="aggOut"></span>
+  </div>
+  <input type="range" id="days" min="0" max="365" step="1" value="97" aria-label="流失时长（天）">
+  <div class="dw-scale"><span>0</span><span>90</span><span>180</span><span>270</span><span>365</span></div>
+  <div class="dw-ctl" id="ctl"></div>
+
+  <div class="dw-tally">
+    <div class="a"><span>可直接沿用</span><b id="c0">0</b></div>
+    <div class="b"><span>需观察确认</span><b id="c1">0</b></div>
+    <div class="c"><span>必须重测</span><b id="c2">0</b></div>
+  </div>
+
+  <div class="dw-grid" id="grid"></div>
+
+  <p class="dw-note">
+    <b>读法</b>　拖动流失时长，各条目按各自的半衰期分别下降。注意玩法一栏内部：内容类型与难度偏好在同一时刻分处两档。<br>
+    <b>执行重测</b>　将当前处于最低档的条目重新测定，置信度归位并自此刻重新计时。继续拖动，它们会再次衰变。<br>
+    <b>说明</b>　半衰期与分档线均为示意值，待接入真实数据后校准。虚化的条目并非记忆丢失，而是系统无法确认其今日是否仍然成立。
+  </p>
+</div>
+
+<h3>快慢分区</h3>
+<p>按衰变档位，16 条划为三区。该分区直接决定编排路径的构成。</p>
+
+<table>
+  <tr><th>分区</th><th>条目</th><th>处置</th></tr>
+  <tr><td>慢变</td><td>表达长度 · 交互方式 · 情绪外显 · 关系驱动 · 内容类型 · 推进方式</td><td>回流瞬间直接沿用，用于<strong>承接</strong></td></tr>
+  <tr><td>快变</td><td>单次时长 · 打扰容忍度 · 难度偏好</td><td>不予沿用，构成<strong>重测</strong>路径的目标</td></tr>
+  <tr><td>中速</td><td>目标驱动 · 合作偏好 · 任务密度 · 表达主动性 · 陪伴需求 · 回应敏感度</td><td>观察若干次交互后再定</td></tr>
+</table>
+
+<p>左列决定玩家一回来听到的第一句话是什么语气，右列决定接下来这条路径先测什么。</p>
+
+<h4>表达维度整体最慢</h4>
+<p>表达维度接近人格特征，衰变最慢。<strong>这正是它适合在回流瞬间承接玩家的原因</strong>：可直接沿用，无需重测。一段时间之后系统还能对上的，往往只剩玩家说话的方式。</p>
+
+<h4>节奏维度整体最快</h4>
+<p>节奏由游戏外的生活状态决定，而回流玩家的生活状态几乎必然已经改变。它是回流场景中最不能沿用旧值的一栏。</p>
+
+<h4>对象偏好：失效不是漂移</h4>
+<div class="callout">
+  <div class="t">Boundary</div>
+  部分画像条目变化缓慢，但仍可能因为对象本身发生变化而<strong>失效</strong>。例如玩家对某位固定队友、帮派或角色的偏好可能长期稳定——玩家并没有改变，但当队友离开、帮派解散或相关内容退出当前版本时，这条画像就不再具备原来的使用条件。<br><br>
+  失效与漂移是两类问题：漂移应通过重测修正取值，失效则须启用替代锚点。将失效误判为漂移，会导致系统反复尝试测量一个已不存在的对象。
+</div>
+
+<div class="cite"><b>Ref · 可行性</b> 分层记忆的工业实现（LIBER，2024）已验证短期缓存与长期记忆分区、并显式建模兴趣漂移的可行性，线上核心指标为正向。该工作说明按时间尺度分区处理用户信号在方向上可行。</div>
+
+
+<h2 id="s05"><span class="n">05 / ORCHESTRATION</span>动态编排</h2>
+
+<div class="cite"><b>Ref · 缺口</b> 现有推荐系统不区分短期触发、中期会话与长期习惯，这在综述中被列为公开承认的未解问题；受其影响最大的正是长期不活跃用户。</div>
+
+<h3>缺口的性质</h3>
+<p>由多速衰变可直接推出：画像无法被统一处理。统一沿用会带入已过期的快变条目，统一清空会丢弃仍然成立的慢变条目。<strong>只能差异化处理，而差异化处理即是编排。</strong></p>
+
+<h4>该缺口不能由规则补上</h4>
+<p>为每个条目设置衰减系数，只能表达「信息已经失效」，无法回答「此刻状态是什么」。前者是时间运算，后者需要语义级比对。目前可行的做法，是将新旧两段状态同时交由模型判断——哪些是新出现的、哪些已经过时应予剔除。这也是 AI 在本方案中登场的理由，且此前必须先说明缺口是行业性的，而非本方案特有的。</p>
+
+<h3>由记忆管理转为行动编排</h3>
+<p>须对既有工作划出边界。分层记忆类工作解决的是「记住什么、忘掉什么」，是被动的、事后的。它把玩家<strong>承接</strong>住了，但对回流场景不够——玩家已经在游戏里，系统不能等待她自行产生足够多的行为才更新画像。</p>
+
+<div class="callout jade">
+  <div class="t">Thesis</div>
+  在既有研究中，条目的快慢决定<strong>记忆策略</strong>——何者保留、何者丢弃。<br>
+  在回流场景中，条目的快慢应当决定<strong>接下来做什么</strong>——慢变条目以长期记忆直接承接；快变条目不予沿用，须主动排出一条路径，尽快将其重新测定。<br><br>
+  <strong>这就是动态编排。</strong>前者是存储策略，后者是行动策略；回流场景真正缺的是后者。
+</div>
+
+<h3>服务与探测合一</h3>
+<p>重测不以问卷或设置项的形式出现。系统排出的路径本身即是一次可用的游戏体验，玩家在其中的选择、接受与拒绝构成测量结果。<strong>玩家侧只有帮助，没有测试。</strong>每一次编排同时完成一次服务与一次校准，这是本方案区别于显式偏好采集的关键。</p>
+
+<p>由此，推荐在本方案中既是输出，也是下一轮画像更新的输入。</p>
+
+
+<h2 id="s06"><span class="n">06 / OPERATION</span>五种运算与工作流</h2>
+
+<h3>四维承担四种运算，元维度承担准入</h3>
+<p>各维度承担的作用不同，不能被压缩为一个统一分数。一条输出不是由一个总分算出，而是由五种运算共同生成。</p>
+
+<table>
+  <tr><th>维度</th><th>运算</th><th>输出</th></tr>
+  <tr><td>玩法</td><td>匹配</td><td>推什么</td></tr>
+  <tr><td>节奏</td><td>过滤</td><td>推多少、推多快、以何种形态</td></tr>
+  <tr><td>关系情感</td><td>索引</td><td>借哪个对象或场景发生</td></tr>
+  <tr><td>表达</td><td>渲染</td><td>用什么语气说</td></tr>
+  <tr><td>元维度</td><td><strong>准入</strong></td><td>是否允许说</td></tr>
+</table>
+
+<p class="line">个性化差异不来自推荐内容本身，而来自画像 Schema 对编排路径的选择。</p>
+
+<h3>准入值：组内取最低，不取平均</h3>
+<p>各运算拥有独立的准入值，取该运算所属条目当日置信度中的<strong>最低者</strong>，并与成熟度共同约束。</p>
+
+<div class="callout">
+  <div class="t">Why MIN</div>
+  平均会掩盖短板。以匹配组为例：内容类型、目标驱动、合作偏好三条均处于健康区间，而难度偏好已跌至最低档。取平均后该组看似可用，但系统实际上并不知道玩家现在能承受多难的内容，据此推荐即会失败。<br><br>
+  <strong>木桶效应是被刻意设计进去的，不是缺陷。</strong>系统可能仍然准确知道玩家停在哪里、与谁有关，却没有足够把握判断她现在该玩什么——能恢复上下文，不等于能够直接推荐下一步。
+</div>
+
+<h3>两道准入</h3>
+<p>准入在流程中出现两次，判断对象不同，不可合并。</p>
+
+<table>
+  <tr><th></th><th>时机准入</th><th>内容准入</th></tr>
+  <tr><td>问题</td><td>现在是否应当开口</td><td>这一条是否允许输出</td></tr>
+  <tr><td>输入</td><td>玩家意图是否占用、场景是否允许、频次、是否曾被拒绝</td><td>禁用项、依赖条件、该条候选的置信是否支撑</td></tr>
+  <tr><td>不通过</td><td>整轮沉默</td><td>掩码；全部被掩掉则允许空表</td></tr>
+</table>
+
+<p>若合并为一道，则要么在尚不知道要给什么时便做内容判断，要么在玩家正忙时白算一整轮。两道准入均归元维度，且都只做减法。</p>
+
+<h3>表达维度不参与并行</h3>
+<p>匹配、过滤、索引三路决定「给什么」，表达只决定「怎么说」。因此表达不参与候选生成，仅作用于下游渲染层。<strong>这一不对称是结构正确的表现，不是遗漏。</strong></p>
+
+<h3>输出形态是读数，不是设计选择</h3>
+<p>交互形态由匹配准入与索引基数共同决定：准入不通过或索引为零时，系统无法确定推荐内容，只能以闭集选项询问玩家；准入通过且索引为一时，生成单一路径，以链条方式逐步递出；索引为多时，生成目录，由玩家主动选择；无待确认信息时，不触发。</p>
+
+<table>
+  <tr><th>样本</th><th>匹配准入</th><th>索引基数</th><th>形态</th><th>本轮测到什么</th></tr>
+  <tr><td>阿枝</td><td>通过</td><td>1（陆青）</td><td>链条</td><td>可接受体量</td></tr>
+  <tr><td>阿霁</td><td>通过</td><td>1（望川坪）</td><td>链条</td><td>体量与偏离</td></tr>
+  <tr><td>问渠</td><td>通过</td><td>多（NPC 众多）</td><td>目录 / 决策卡</td><td>主动选择的对象</td></tr>
+  <tr><td>——</td><td>全部通过</td><td>——</td><td>不触发</td><td>无待确认信息</td></tr>
+</table>
+<p class="caption">问渠仅用于说明高索引基数下的形态取值，不参与后续主论证。</p>
+
+<h3>工作流节点</h3>
+
+<div class="diagram">
+<svg viewBox="0 0 620 560" width="100%" style="max-width:620px" role="img" aria-label="回流 Agent 工作流节点图">
+<defs>
+  <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+    <path d="M0,0 L10,5 L0,10 z" fill="#A3A39F"/>
+  </marker>
+  <style>
+    .nb{fill:#fff;stroke:#D5D5D1;stroke-width:1.2}
+    .nb.gate{fill:#F3F1E8;stroke:#CFCABA}
+    .nb.rule{fill:#FBEEEB;stroke:#E7B9AF}
+    .nb.llm{fill:#EBF3F0;stroke:#B8D6CC}
+    .nt{font-size:12.5px;fill:#1A1A1C;font-weight:600;font-family:'Noto Sans SC',sans-serif}
+    .ns{font-size:10px;fill:#6B6B6E;font-family:'JetBrains Mono',monospace}
+    .lk{stroke:#A3A39F;stroke-width:1.3;fill:none;marker-end:url(#ar)}
+    .lk.dash{stroke-dasharray:4 4}
+    .lbl{font-family:'JetBrains Mono',monospace;font-size:9.5px;fill:#A3A39F}
+  </style>
+</defs>
+
+<rect class="nb" x="200" y="10" width="220" height="40" rx="8"/>
+<text class="nt" x="310" y="28" text-anchor="middle">触发 · 诱因耗尽</text>
+<text class="ns" x="310" y="42" text-anchor="middle">玩家回到无目标状态</text>
+<path class="lk" d="M310,50 L310,72"/>
+
+<rect class="nb gate" x="200" y="74" width="220" height="42" rx="8"/>
+<text class="nt" x="310" y="92" text-anchor="middle">① 时机准入</text>
+<text class="ns" x="310" y="106" text-anchor="middle">意图 · 场景 · 频次 · 曾否被拒</text>
+<path class="lk dash" d="M420,95 L500,95 L500,60"/>
+<text class="lbl" x="505" y="52">不通过 →</text>
+<text class="lbl" x="505" y="64">整轮沉默</text>
+<path class="lk" d="M310,116 L310,138"/>
+
+<rect class="nb" x="200" y="140" width="220" height="40" rx="8"/>
+<text class="nt" x="310" y="158" text-anchor="middle">置信衰减</text>
+<text class="ns" x="310" y="172" text-anchor="middle">按各自半衰期算今日置信</text>
+<path class="lk" d="M310,180 L310,196"/>
+<path class="lk" d="M310,196 L100,196 L100,214"/>
+<path class="lk" d="M310,196 L310,214"/>
+<path class="lk" d="M310,196 L520,196 L520,214"/>
+
+<rect class="nb rule" x="20" y="216" width="160" height="52" rx="8"/>
+<text class="nt" x="100" y="236" text-anchor="middle">匹配</text>
+<text class="ns" x="100" y="252" text-anchor="middle">玩法 · 推什么</text>
+<rect class="nb rule" x="230" y="216" width="160" height="52" rx="8"/>
+<text class="nt" x="310" y="236" text-anchor="middle">过滤</text>
+<text class="ns" x="310" y="252" text-anchor="middle">节奏 · 推多少</text>
+<rect class="nb rule" x="440" y="216" width="160" height="52" rx="8"/>
+<text class="nt" x="520" y="236" text-anchor="middle">索引</text>
+<text class="ns" x="520" y="252" text-anchor="middle">关系 · 借哪里</text>
+<text class="lbl" x="310" y="285" text-anchor="middle">三路并行 · 各按组内最低值自行降级</text>
+
+<path class="lk" d="M100,268 L100,292 L310,292 L310,308"/>
+<path class="lk" d="M520,268 L520,292 L310,292"/>
+<path class="lk" d="M310,268 L310,292"/>
+
+<rect class="nb gate" x="200" y="310" width="220" height="42" rx="8"/>
+<text class="nt" x="310" y="328" text-anchor="middle">② 内容准入</text>
+<text class="ns" x="310" y="342" text-anchor="middle">禁用项 · 依赖 · 置信 · 掩码</text>
+<path class="lk dash" d="M420,331 L500,331 L500,300"/>
+<text class="lbl" x="505" y="292">全掩掉 →</text>
+<text class="lbl" x="505" y="304">允许空表</text>
+<path class="lk" d="M310,352 L310,374"/>
+
+<rect class="nb" x="200" y="376" width="220" height="40" rx="8"/>
+<text class="nt" x="310" y="394" text-anchor="middle">输出结构</text>
+<text class="ns" x="310" y="408" text-anchor="middle">非自然语言 · 内容已定死</text>
+<path class="lk" d="M310,416 L310,438"/>
+
+<rect class="nb llm" x="200" y="440" width="220" height="40" rx="8"/>
+<text class="nt" x="310" y="458" text-anchor="middle">渲染 · LLM</text>
+<text class="ns" x="310" y="472" text-anchor="middle">表达维度约束语气</text>
+<path class="lk" d="M420,460 L560,460 L560,430"/>
+<text class="lbl" x="440" y="452">表达 · 渲染</text>
+<path class="lk" d="M310,480 L310,502"/>
+
+<rect class="nb" x="200" y="504" width="220" height="40" rx="8"/>
+<text class="nt" x="310" y="522" text-anchor="middle">输出 · 气泡 / 卡片</text>
+<text class="ns" x="310" y="536" text-anchor="middle">玩家动作 → 画像写回</text>
+<path class="lk" d="M200,524 L40,524 L40,160 L200,160"/>
+<text class="lbl" x="48" y="348">写回</text>
+</svg>
+<div class="dcap">赭色为决策层，由规则执行；青色为渲染层，仅一层；米色为元维度准入</div>
+</div>
+
+<p>决策层由规则执行，可审计、可复现、可拒绝；渲染层由 LLM 在既定事实与结构之上选择表达方式。触发点不是登录，而是诱因耗尽——系统不在玩家已有明确目标时打断，而是在奖励领取、活动浏览等初始诱因结束、玩家重新进入无明确去向的状态时介入。</p>
+
+<h3>实例：同一件外观，两种编排</h3>
+<p>下例中两名样本玩家的内容指针完全相同，均为外观「风花雾」。所有差异均来自其余条目。<strong>卡面各行标注为「维度 · 条目」，取值中的具体人名与地名为实例，不属于 Schema。</strong></p>
+
+<div class="cmp">
+  <div class="pc">
+    <div class="pc-n" style="color:var(--d4)">阿枝</div>
+    <div class="pc-d">穿给别人看，靠好友与外观维系在场感</div>
+    <div class="pr"><div class="lb"><i style="background:var(--d3)"></i>玩法 · 内容类型</div><div class="vl">外观驱动</div></div>
+    <div class="pr"><div class="lb"><i style="background:var(--d3)"></i>玩法 · 目标驱动</div><div class="vl">被看见 · 收集展示</div></div>
+    <div class="pr"><div class="lb"><i style="background:var(--d1)"></i>关系情感 · 对象偏好</div><div class="vl">人 · <s>陆青</s></div></div>
+    <div class="pr"><div class="lb"><i style="background:var(--d4)"></i>表达 · 情绪外显</div><div class="vl">热络 · 可情绪化</div></div>
+    <div class="pr"><div class="lb"><i style="background:var(--meta)"></i>元维度 · 时效</div><div class="vl">尚可 · 可直接推</div></div>
+    <div class="bub"><div class="who">燕叽</div>风花雾上新啦！这套穿出去回头率绝对高，你上次那身好几个人来问。陆青他们都在线，现在去试试？</div>
+  </div>
+
+  <div class="pc">
+    <div class="pc-n" style="color:var(--d2)">阿霁</div>
+    <div class="pc-d">深度单机，喜欢外观跑图拍照</div>
+    <div class="pr"><div class="lb"><i style="background:var(--d3)"></i>玩法 · 内容类型</div><div class="vl">外观驱动</div></div>
+    <div class="pr"><div class="lb"><i style="background:var(--d3)"></i>玩法 · 目标驱动</div><div class="vl">成果导向 · 完成度</div></div>
+    <div class="pr"><div class="lb"><i style="background:var(--d1)"></i>关系情感 · 对象偏好</div><div class="vl">地点 · <s>望川坪</s></div></div>
+    <div class="pr"><div class="lb"><i style="background:var(--d4)"></i>表达 · 情绪外显</div><div class="vl">克制</div></div>
+    <div class="pr"><div class="lb"><i style="background:var(--meta)"></i>元维度 · 时效</div><div class="vl">下降 · 需留退出口</div></div>
+    <div class="bub"><div class="who">燕叽</div>你上次那张在望川坪拍的还留着。酉时的光是最好的，风花雾配这个季节。</div>
+  </div>
+</div>
+
+<div class="tbl-scroll">
+<table>
+  <tr><th>输出成分</th><th>决定于</th><th>阿枝</th><th>阿霁</th></tr>
+  <tr><td>推什么</td><td>玩法 · 内容类型（相同）</td><td>风花雾</td><td>风花雾</td></tr>
+  <tr><td>借哪个锚点</td><td>关系情感 · 对象偏好</td><td>人：陆青</td><td>地点：望川坪</td></tr>
+  <tr><td>说到哪个落点</td><td>玩法 · 目标驱动</td><td>被人来问、好友在线</td><td>那张照片、季节与光线</td></tr>
+  <tr><td>语气与长度</td><td>表达 · 情绪外显</td><td>热络、可用感叹</td><td>克制、陈述句</td></tr>
+  <tr><td>推得多用力</td><td>元维度 · 时效</td><td>直接推，以提问收束</td><td>留退出口，不以提问施压</td></tr>
+</table>
+</div>
+
+<p>同一件内容之下，输出中的每一处差异都可归至某一具体条目。<strong>个性化不在「推什么」那一层，而在 Schema 决定编排路径的那一层。</strong>节奏维度在本例中未参与，因为两侧的体量约束一致。</p>
+<p>阿枝一侧提及好友在线状态，属玩家自身在游戏内已可见的信息，通过第 10 章的第三方域条款；该处同时构成第 10 章交叉校验的正例。</p>
+
+<div class="callout plain">
+  <div class="t">Premise</div>
+  上述编排成立的前提是 Schema 本身是准的。而回流玩家的 Schema，恰恰是过期的——这正是第 07 章须解决的问题。
+</div>
+
+
+<h2 id="s07"><span class="n">07 / SIGNAL</span>信号探测与写回权限</h2>
+
+<h3>三类信号，按可信度分级</h3>
+<table>
+  <tr><th>类型</th><th>定义</th><th>例</th><th>采信规则</th></tr>
+  <tr><td>显性</td><td>玩家说了什么</td><td>点击 CTA、购买、关闭推荐、设置免打扰</td><td>单次即可采信</td></tr>
+  <tr><td>行为</td><td>玩家做了什么</td><td>打开地图、抵达、停留时长、路径偏离</td><td>需结合上下文归因</td></tr>
+  <tr><td>缺席</td><td>玩家什么都没做</td><td>不响应、连续无视</td><td><strong>须累积成模式方可采信</strong></td></tr>
+</table>
+
+<h3>三个方向</h3>
+<p>正向、负向之外，本方案单列<strong>偏离</strong>：大类被确认，具体项被否定。</p>
+<div class="callout">
+  <div class="t">Deviation</div>
+  <strong>偏离不是拒绝。</strong>系统引导玩家查看某件外观，她转而在商店选择了另一件——内容类型得到强确认，具体取向则须重测。一个动作同时写向两个粒度：粗粒度加强，细粒度作废并重新赋值。<br><br>
+  须注意：缺席信号不能构成正向证据。什么都不做永远不能证明玩家喜欢，只能在累积后构成负向或时机证据。
+</div>
+
+<h3>写回权限矩阵</h3>
+<p>写回权限由信号可信度与条目衰变速度共同决定。</p>
+<table>
+  <tr><th></th><th>低可信信号（缺席 / 行为）</th><th>高可信信号（显性）</th></tr>
+  <tr><td>慢变条目</td><td><strong>可加强，不可改写</strong><br>同向证据累积提升置信；反向证据只记录，不覆盖取值</td><td><strong>可改写</strong><br>写回后重置衰变计时</td></tr>
+  <tr><td>快变条目</td><td><strong>直接更新</strong><br>本就处于待重测状态，门槛低</td><td><strong>直接更新</strong><br>可提前结束本轮重测</td></tr>
+</table>
+<p>偏离信号能一次写入两处：粗粒度落在「慢变 × 加强」，细粒度落在「快变 × 更新」，两侧均合规。</p>
+
+<h3>推荐内与推荐外</h3>
+<p>玩家执行系统推荐的动作，可能只是顺从引导，因此仅构成弱证据；玩家主动选择了系统未推荐的内容，更能反映真实取向，构成强证据。<strong>推荐内的行为用于验证，推荐外的行为用于发现。</strong></p>
+<p>需同时说明其不对称性：偏离是单向证据——其发生构成强证据，其未发生不构成任何证据。因此偏离率不可作为考核指标，一旦以其为目标，系统将转向诱导偏离，该信号随即失效。</p>
+
+<h3>置信度描述的是系统认知</h3>
+<p>低置信度不等于关系弱或偏好弱，只表示系统对该条目了解不足。玩家建立关系的速度可能快于画像更新速度。也正因为系统没有提前引导「邀请谁」，玩家的主动选择才能成为有效证据。</p>
+<p class="line">取值改写不等于置信下降。进度条变短不应被读作系统对玩家的了解变少了。</p>
+
+
+<h2 id="s08"><span class="n">08 / RENDER</span>表达层与算法边界</h2>
+
+<p>决策不交由 LLM。决策层先输出一个经过筛选的结构，明确内容指针、关系锚点、表达语气与禁用项；LLM 仅负责将该结构转化为自然语言。以下承接第 06 章的两名样本：内容指针相同，差异只来自各自的锚点、语气与禁用条件。</p>
+
+<div class="two">
+<pre><code><span class="cmt">// 阿枝</span>
+{
+  <span class="key">"单元"</span>: <span class="val">"物品·外观"</span>,
+  <span class="key">"指针"</span>: <span class="val">"风花雾"</span>,
+  <span class="key">"锚点"</span>: {
+    <span class="key">"类型"</span>: <span class="val">"人"</span>,
+    <span class="key">"名"</span>: <span class="val">"陆青"</span>,
+    <span class="key">"事件"</span>: <span class="val">"合影×1"</span>
+  },
+  <span class="key">"语气"</span>: <span class="val">"热络 · 可情绪化"</span>,
+  <span class="key">"禁用"</span>: [<span class="val">"限时"</span>, <span class="val">"第三方推断"</span>]
+}</code></pre>
+<pre><code><span class="cmt">// 阿霁</span>
+{
+  <span class="key">"单元"</span>: <span class="val">"物品·外观"</span>,
+  <span class="key">"指针"</span>: <span class="val">"风花雾"</span>,
+  <span class="key">"锚点"</span>: {
+    <span class="key">"类型"</span>: <span class="val">"地点"</span>,
+    <span class="key">"名"</span>: <span class="val">"望川坪"</span>,
+    <span class="key">"事件"</span>: <span class="val">"春天那张"</span>
+  },
+  <span class="key">"语气"</span>: <span class="val">"克制"</span>,
+  <span class="key">"禁用"</span>: [<span class="val">"限时"</span>, <span class="val">"第三方推断"</span>,
+            <span class="val">"咱们"</span>, <span class="val">"数字/进度"</span>]
+}</code></pre>
+</div>
+
+<h4>差异来自字段，不来自模型</h4>
+<p>本机制的价值不在提示词文案，而在输入结构中定义了哪些字段。同一个模型，若只接收玩家 ID、等级与外观偏好，只能生成宽泛推荐；若进一步接收关系锚点、互动方向、记忆事件与禁用条件，才能形成针对当前玩家的判断。</p>
+
+<h4>为什么决策不交给 LLM</h4>
+<ul>
+  <li>目标是缩小画像失配，而 LLM 擅长生成最可能的表达。「最可能」不等于「足以支持决策」。</li>
+  <li>系统需要处理「知道但不说」。掩码、禁用与留白本身是设计结果，而 LLM 不擅长稳定执行此类负向约束。</li>
+  <li>LLM 的错误难以追溯。本方案要求每一处差异均可对应到具体条目，因此决策必须由可审计的规则完成。</li>
+</ul>
+<p>渲染层则适合交由 LLM：字段组合出的表达空间无法以模板穷举，模型可在既定事实、锚点与禁用条件之内生成更贴近个体的说法。</p>
+<p class="line">规则决定说什么、能不能说；LLM 只决定怎么说。</p>
+
+
+<h2 id="s09"><span class="n">09 / FLOW</span>全流程交互方案</h2>
+
+<h3>两句话结构：索引先于匹配</h3>
+<p>系统的介入分为两步，中间必须经过玩家的一次主动行为。</p>
+<table>
+  <tr><th></th><th>第一句 · 气泡</th><th>第二句 · 卡片</th></tr>
+  <tr><td>作用</td><td>建立个人索引</td><td>提供内容匹配</td></tr>
+  <tr><td>信息</td><td>系统仍然记得玩家</td><td>系统可以为玩家推荐</td></tr>
+  <tr><td>范围</td><td>仅该玩家会收到</td><td>可覆盖同偏好玩家</td></tr>
+  <tr><td>玩家未回应</td><td>交互自然结束</td><td>不进入该步</td></tr>
+</table>
+<p>第一句必须能够独立成立，不默认导向推荐；否则「记得你」只是推荐前的话术。只有当玩家点击系统或继续相关行为之后，系统才获得递出第二句的资格。<strong>推荐不由停留时长自动触发，而由玩家的动作授权。</strong>同时，玩家是否回应第一句，本身即验证了该锚点是否仍然有效。</p>
+
+<h3>主案例：阿霁 · 十一步</h3>
+<p>本案例包含承接、编排、偏离与写回的完整一轮，并包含系统主动选择不写回的步骤。</p>
+
+<div class="tbl-scroll">
+<table>
+  <tr><th>#</th><th>玩家动作</th><th>系统处置</th><th>依据</th></tr>
+  <tr><td>S1</td><td>领取回流奖励</td><td>内容类型 加强</td><td>弱信号同向加强；领取即离，判定奖励非驱动，不追加奖励类推荐</td></tr>
+  <tr><td>S2</td><td>接受好友邀请</td><td>合作偏好 置信下降，取值不改；新对象实例以极低置信记录</td><td><strong>反向证据只降置信，不覆盖取值</strong>；进入观察区</td></tr>
+  <tr><td>S3</td><td>进入后无明确目标</td><td><strong>不写回</strong>；时机准入值上升</td><td>缺席信号单次不采信；诱因耗尽且行为链出现空档，具备开口条件</td></tr>
+  <tr><td>S4</td><td>——</td><td><strong>只读取，不写回</strong>；递出第一句</td><td>慢变条目高置信，直接沿用以承接；措辞为陈述而非提问</td></tr>
+  <tr><td>S5</td><td>点开地图</td><td>内容类型 加强</td><td>意图信号，探测窗口打开</td></tr>
+  <tr><td>S6</td><td>——</td><td><strong>不写回</strong>；递出第二句</td><td>望川坪 × 风花雾；服务与探测合一，保留退出口</td></tr>
+  <tr><td>S7</td><td>抵达望川坪</td><td>对象偏好 加强并新增锚点；单次时长开始重测计时；目标驱动 加强</td><td>按轨迹抵达，行为信号获上下文支持</td></tr>
+  <tr><td>S8</td><td>点开换装</td><td>内容类型 加强</td><td>大类确认</td></tr>
+  <tr><td>S9</td><td><strong>选择了另一件外观</strong></td><td>大类 加强；具体取值作废并重新赋值</td><td><strong>偏离 · 一个动作写向粗细两个粒度</strong></td></tr>
+  <tr><td>S10</td><td>邀请新好友同行</td><td>合作偏好 取值改写并跨过采信线；对象实例置信跨线；陪伴需求 加强</td><td><strong>第二次独立同向证据</strong>；关系驱动保持不变——人服务于作品</td></tr>
+  <tr><td>S11</td><td>一起拍照</td><td>内容类型 确认；目标驱动 加强；单次时长重测完成；打扰容忍度 加强；成熟度 提升</td><td>产出照片存档，<strong>成为下一次承接的素材</strong></td></tr>
+</table>
+</div>
+
+<h4>三处须专门说明</h4>
+<ol>
+  <li><strong>S3、S4、S6 显式不写回。</strong>十一步中有三步系统主动选择不改动画像。这是「帮忙不越界」在数据层最直接的体现。</li>
+  <li><strong>前三步沉默的原因不是画像差。</strong>此时慢变条目置信仍然很高，系统对玩家其实很有把握。不开口是因为时机不对：S1 玩家意图明确，S2 社交行为进行中，插入均构成打断。<strong>一个会克制的助手，首先要学会等待。</strong></li>
+  <li><strong>S2 与 S10 是同一条线索的两次出现。</strong>不需另行解释「累积才写回」，流程本身已完成演示。</li>
+</ol>
+
+<h4>本轮写回统计</h4>
+<p>四维 16 条中：加强 4 · 改写 1 · 重测 2 · 保持 8 · 未触及 1。</p>
+<p>十六条中有九条系统选择不动。难度偏好全程未被触及——<strong>一轮回流测不完所有条目，这正是编排须跨多次进行的原因。</strong></p>
+
+<h3>双屏推演的读法</h3>
+<ul>
+  <li><strong>左屏 · 玩家看到的</strong>：游戏画面与助手对话。只有帮助，没有测试。</li>
+  <li><strong>右屏 · 系统在做的</strong>：五种运算的画像面板与写回流水，每步同步刷新。</li>
+  <li><strong>两条通道</strong>：信号上行（玩家动作 → 系统读取）；编排下行（系统决策 → 助手开口）。</li>
+  <li><strong>底部闭环</strong>：S11 产出的照片经写回，成为下一次承接的素材。</li>
+</ul>
+
+<h4>Schema 与实例分离</h4>
+<p>面板显示 Schema（跨玩家、跨游戏不变），信号识别与写回流水显示实例（望川坪、风花雾、具体好友）。流水格式为：动作 · 实例 → Schema 条目 · 变化〔权限〕。取值改写以箭头表示，置信升降以升降号表示，二者不可混用。</p>
+<p>该分离带来三点好处：面板可跨玩家并排比较；信息密度得以分层；<strong>Meta 系统的可复用性由此获得视觉证明</strong>。</p>
+
+<h3>界面语法</h3>
+<p>本方案只定义四类基础交互语法，具体内容复用游戏现有组件——任务用任务卡，人物用头像行，场景用地图卡。复用组件形态，但不沿用其原有语境。</p>
+<ul>
+  <li><strong>口</strong>　玩家随时可以主动表达的入口。</li>
+  <li><strong>槽</strong>　可忽略的闭集选项。</li>
+  <li><strong>空</strong>　「一个都不要」始终作为等权选项存在。</li>
+  <li><strong>记</strong>　介于 HUD 与日志之间的轻量持久层。</li>
+</ul>
+
+
+<h2 id="s10"><span class="n">10 / FALLBACK</span>边界与兜底</h2>
+
+<h3>降级至合法形态，而非异常补救</h3>
+<p>一个会做推断的系统，必然会推断错误。因此真正需要回答的不是准确率，而是<strong>推断错误时会发生什么</strong>。</p>
+<p>本方案中的兜底不是出错后的补救，而是将不确定性转化为更轻的交互形态。系统无法可靠判断时不强行给出结论，而是减少表达。此时「少说」不是失败，而是一种完整的产品状态。降级阶梯为：出声 → 气泡 → 弱提示 → 待命 → 沉默。</p>
+
+<h3>错误只发生在三处</h3>
+<table>
+  <tr><th>#</th><th>情形</th><th>处置</th><th>体验为何不断流</th></tr>
+  <tr><td>①</td><td>输入不足</td><td>关闭准入，降级为闭集；仍不足时允许空表</td><td>闭集与空表都是完整状态，玩家可选择或直接忽略</td></tr>
+  <tr><td>②</td><td>输入冲突</td><td>低于采信线的信息不进入推荐，选择权交还玩家</td><td>系统不在歧义处下判断，而由下一步行为继续确认</td></tr>
+  <tr><td>③</td><td>输出越界</td><td>禁用项为硬约束，不合规结果直接拒收</td><td><strong>LLM 只负责表达，不拥有新增事实或改变推荐的权限</strong></td></tr>
+</table>
+<p class="line">三者方向一致：不确定的时候，退回到更少的介入，而不是更多。</p>
+
+<h3>跨玩家约束校验</h3>
+<p>生成约束是否真正生效，可由跨玩家校验直接验证：将为玩家 A 生成的合法输出，施加于玩家 B 的约束集，该输出应被拒收，且每一处拒收均可回溯至具体条目。</p>
+<p>以第 06 章的两条输出为例，将阿枝一侧的输出施加于阿霁的约束集时，系统应识别出三处冲突：</p>
+<ul>
+  <li><strong>人名「陆青」</strong>　违反第三方索引约束。该对象不在阿霁当前可用的关系索引中。</li>
+  <li><strong>「回头率」「好几个人来问」</strong>　违反目标驱动约束。阿枝面向他人，阿霁面向成果。</li>
+  <li><strong>感叹与提问句式</strong>　违反情绪外显约束。阿霁一侧的接受度较低，且时效下降时须保留退出口。</li>
+</ul>
+<p>三处违规分别发生在事实层、结构层与表达层，说明系统执行的不是关键词过滤，而是基于画像条目的结构化校验。<strong>该校验为主动设计的验证手段，纳入常规回归。</strong></p>
+
+<h3>辅助而不越界</h3>
+<p>以下三条边界由设计目标直接推出，并非额外附加的约束。</p>
+<ul>
+  <li><strong>不替玩家做最终决定。</strong>系统提供判断所需的信息，但不代替玩家得出结论。诸如「与谁同行」一类的选择，决定权始终保留在玩家手中。</li>
+  <li><strong>不接管核心乐趣。</strong>任务代劳仅限重复性操作，不涉及代打，不剧透关键解谜。介入以减少摩擦为限。</li>
+  <li><strong>商业化红线。</strong>不使用限时等紧迫性表述。此类信息属既有事实，已由商城界面与全局广播承载；系统若重复，只会使自身沦为一处成本更高的营销位。</li>
+</ul>
+<p>其余明确不做的事项：不撮合关系、不推断游戏外信息、不承诺尚未确定的内容。<strong>最高优先级：玩家的显式拒绝高于任何推断。推断可以覆盖沉默，不能覆盖表达。</strong></p>
+
+<h3>载体资格</h3>
+<p>当高人设 NPC 被用作表达载体时，须依次通过七项校验，任一不通过即不启用该载体：</p>
+<ol>
+  <li><strong>索引</strong>　熟悉度达到阈值。</li>
+  <li><strong>核对</strong>　该 NPC 在当前版本中仍然在场。</li>
+  <li><strong>人设域</strong>　待表达的内容均在其人设范围内可自然说出。</li>
+  <li><strong>归因</strong>　该 NPC 不属于本次回流诱因的构成部分。</li>
+  <li><strong>受众域</strong>　玩家可接受该 NPC 的表达方式。</li>
+  <li><strong>第三方域</strong>　涉及他人的信息，仅限玩家自身已可见的部分。</li>
+  <li><strong>非复述</strong>　不重复回流诱因已经传达的内容。</li>
+</ol>
+<p>多数情形下，七项校验的结论是该载体本次不予启用。<strong>载体的启用是有条件的例外，不是默认。</strong></p>
+
+<h3>明确排除的范围</h3>
+<ul>
+  <li><strong>不作为通用推荐系统。</strong>系统仅在画像失配达到一定程度时触发；对画像成熟、无待确认信息的玩家不触发，亦不呈现任何界面。</li>
+  <li><strong>不以命中率为目标。</strong>编排的目的不是每次猜中，而是为玩家保留推翻系统判断的机会。方案更看重可证伪性。</li>
+  <li><strong>不以偏离率为考核指标。</strong>理由见第 07 章。</li>
+</ul>
+
+
+<h2 id="s11"><span class="n">11 / CONVERGENCE</span>收敛判据与稳定性</h2>
+
+<h3>断层是一个差值，不是一个状态</h3>
+<p>系统运行期间，画像与玩家之间的失配量始终大于零。这不是实现缺陷，而是三条结构性原因所致：</p>
+<ul>
+  <li>衰变从不停止——即便在玩家持续在线期间，快变条目仍在贬值；</li>
+  <li>测量是离散的，而漂移是连续的；</li>
+  <li>一轮编排测不完所有条目（见第 09 章的写回统计）。</li>
+</ul>
+<p class="line">目标不是使失配归零，而是使重测速度不低于衰变速度。</p>
+
+<h3>衰变—重测—再衰变的规律循环</h3>
+<p>第 04 章的演示可直接操作这一过程：拖动流失时长，各条目下降；执行重测，处于最低档的条目归位并自此刻重新计时；继续拖动，它们再次衰变。系统的长期形态即为该循环的重复。</p>
+<p>判断该循环是否健康，看三件事：</p>
+<ol>
+  <li><strong>每一轮都不会使画像完全对齐</strong>——失配始终存在，这是常态而非故障；</li>
+  <li><strong>每轮循环的上沿逐次抬升</strong>——系统对玩家的判断逐轮更贴近；</li>
+  <li><strong>每轮循环的下沿始终高于可用线</strong>——最低点仍足以支撑一次合格的编排。</li>
+</ol>
+<p><strong>第三条即稳定性的定义。</strong>下沿不跌破可用线，系统即处于稳定状态，无须失配归零。</p>
+
+<h3>四条可观测判据</h3>
+<table>
+  <tr><th>判据</th><th>含义</th></tr>
+  <tr><td>慢变层收敛</td><td>承接所依据的条目趋于稳定，不再频繁波动</td></tr>
+  <tr><td>快变层进入规律循环且下沿稳定</td><td>重测节奏跟得上衰变节奏</td></tr>
+  <tr><td>取值改写频率下降</td><td>系统判断在收敛，而非反复推翻</td></tr>
+  <tr><td>偏离信号减少</td><td>编排越来越对——<strong>这一条玩家侧可感知</strong></td></tr>
+</table>
+<p>原地打转的系统，这四条都不会变动。因此它们同时构成「系统是否在变好」的证伪条件。</p>
+
+
+<h2 id="s12"><span class="n">12 / GENERALIZATION</span>泛化：三层架构</h2>
+
+<p>分层的标准只有一条——换一个游戏时，这一层要不要改。</p>
+<table>
+  <tr><th>层</th><th>内容</th><th>迁移时的改动</th></tr>
+  <tr><td>内核层</td><td>画像模型 · 五种运算 · 衰变模型 · 设计目标</td><td><strong>不动</strong></td></tr>
+  <tr><td>Skill 层</td><td>探针策略、重测条目的选择逻辑、收敛条件</td><td>半可配置</td></tr>
+  <tr><td>配置层</td><td>机制供给表 · 载体表 · 数据通道表 · 一组衰变参数</td><td>全部重填</td></tr>
+</table>
+
+<h3>内核层为什么可以不动</h3>
+<div class="callout jade">
+  <div class="t">Load-bearing</div>
+  四个维度不是从某一款游戏的内容中长出来的，而是从<strong>玩家能够感受到的体验断层</strong>中推导出来的。只要一个游戏有内容、有表达、有节奏、有关系，这四类断层就存在，四种运算加一道准入就成立。<strong>变的是条目，不是运算。</strong>
+</div>
+<p class="line">字段是读数，运算是尺子。换游戏换读数，不换尺子。</p>
+
+<p>因此跨游戏迁移时，需要重新判断的不是运算逻辑，而是<strong>每个维度之下具体由哪些条目承载、这些条目如何取值</strong>。以「表达」维度为例：</p>
+<ul>
+  <li>在开放世界游戏中，可对应外观、装备展示与角色塑造；</li>
+  <li>在音游中，可对应曲目偏好、收藏与成绩展示；</li>
+  <li>在经营游戏中，可对应空间布置、装饰风格与创作倾向。</li>
+</ul>
+<p>游戏内容不同，系统读取的字段也不同，但判断方式一致。</p>
+
+<h3>迁移推演：另一类型的游戏</h3>
+<p>以一款单局极短、社交主导的休闲竞技游戏为例：</p>
+<table>
+  <tr><th>维度</th><th>《燕云十六声》</th><th>短局社交竞技</th></tr>
+  <tr><td>玩法</td><td>门派配搭、连招手感生疏</td><td>新地图机制不会玩，手感下降更快</td></tr>
+  <tr><td>表达</td><td>外观过季、审美改变</td><td>装扮过季<strong>极快</strong>，当季流行整批更换</td></tr>
+  <tr><td>节奏</td><td>单次长时段、赛季进度</td><td>单次极短、通行证落下</td></tr>
+  <tr><td>关系情感</td><td>次要，锚点为<strong>地点</strong></td><td><strong>主导</strong>，锚点为人与房间</td></tr>
+  <tr><td>主导断层</td><td>玩法 + 表达</td><td><strong>关系情感</strong></td></tr>
+</table>
+
+<p>四个维度一条不改，但<strong>主导断层发生了切换</strong>。前者的玩家回来最先感到「打不动了」，后者的玩家回来最先感到「没人跟我玩了」。因此承接的第一句完全不同：前者调用地点与作品，后者调用人与共同经历。<strong>同一套运算，不同的权重与读数。</strong></p>
+<p>探针随之更换：前者引导前往特定地点拍照，同时测定内容取向与单次时长；后者引导进入新地图，观察玩家自行游玩还是邀人同行，一个动作同时测定内容类型与合作偏好。</p>
+<p>衰变参数亦须重填：同一条目在不同游戏中的半衰期不同——外观取向在长线武侠中以月计，在短周期休闲游戏中可能仅以周计。<strong>衰变速度本身即是配置项。</strong></p>
+
+<div class="callout plain">
+  <div class="t">Claim</div>
+  本方案未验证泛化，所做的是使泛化<strong>在结构上成为可能</strong>——将跨游戏不变的部分与游戏特有的部分分离，并明确列出必须重填的内容，即上述三张表加一组参数。这是一个可被证伪的主张，不是一句模糊的愿景。<strong>范式有效性的证据不在于「适用于任何游戏」，而在于「能够指明其不适用之处」。</strong>
+</div>
+
+
+<h2 id="s13"><span class="n">13 / VALIDATION</span>验证与待定项</h2>
+
+<h3>无真实数据条件下的验证</h3>
+<ol>
+  <li><strong>离线逻辑验证。</strong>以预设样本回放系统流程，核查四项：相同内容对不同玩家是否产生差异化表达；两名玩家的输出互换后是否被正确拒收；禁用信息是否泄漏至输出；置信不足时是否正确降级。指标为规则可解释率、锚点事实准确率、禁用项违规率与跨玩家校验识别率。</li>
+  <li><strong>可用性与感知验证。</strong>以真人试用原型，测量玩家是否感到被记得、是否感到被打扰、是否理解系统出现的缘由，以及「暂不需要」一项是否确实无压力。</li>
+  <li><strong>线上灰度验证。</strong>接入真实数据后，比较画像时效的恢复速度与错误推荐后的退出率。画像时效为直接指标，次日及后续留存为结果指标。</li>
+</ol>
+
+<h3>待定项</h3>
+<table>
+  <tr><th>#</th><th>待定</th><th>当前状态</th></tr>
+  <tr><td>1</td><td>各条目半衰期取值</td><td>档位（慢 / 中 / 快）为设计判断，具体天数须由回测校准。文档与演示中的取值均为示意</td></tr>
+  <tr><td>2</td><td>三档分界线取值</td><td>同一条线承担降级与写回两个方向的判定，取值待校准；校准前不在正文中引用具体数值</td></tr>
+  <tr><td>3</td><td>画像整体时效的计算口径</td><td>当前取各条目置信度的<strong>未加权均值</strong>。是否按条目重要性加权，待接入后评估</td></tr>
+  <tr><td>4</td><td>「诱因耗尽」的等待时长</td><td>由诱因体量计算得出，非固定计时器；具体函数待定</td></tr>
+  <tr><td>5</td><td>「主动徘徊」与「挂机离席」的区分</td><td>角色静止时可能是无目标的主动浏览（应触发），也可能已离开设备（不应触发）。保守处置：静止仅降低触发阈值，实际触发仍须等待一个明确动作以确认在场</td></tr>
+  <tr><td>6</td><td>「空」选项的视觉等重</td><td>唯一须在像素层面兑现的条款；视觉权重不足即等同未做</td></tr>
+  <tr><td>7</td><td>跨游戏迁移</td><td>属推演而非实际接入；推演所能提供的最强结论，是提前指明其可能失效的层级</td></tr>
+</table>
+
+<h3>结语</h3>
+<p>过去的回流机制所问的是：玩家落后了多少。本方案所问的是：系统对玩家的认识还剩多少。因此系统不急于推送内容，而是先以仍然成立的条目承接玩家，再通过一次自然的体验重新测定其余部分。</p>
+<p class="claim">断层不只在时间里。而认知没有终点，只有一次比一次更贴近的画像。</p>
+
+<div class="foot">
+AI 助手 · 回流场景 · 设计文档 v4<br>
+配套　可交互衰变演示 · 双屏推演 · 结构化输出样例<br>
+参考　agentic 推荐系统综述（2026）· LIBER 分层用户行为建模（2024）
+</div>
+
+</div>
+
+<script>
+(function(){
+var DIMS=[
+ {k:"meta",n:"元维度",j:"该不该说",c:"var(--meta)",it:[
+   {n:"时效",h:70,t:"汇总"},
+   {n:"成熟度",h:1e9,t:"不衰变"}]},
+ {k:"d3",n:"玩法",j:"给什么",c:"var(--d3)",it:[
+   {n:"内容类型",h:280,t:"慢"},
+   {n:"难度偏好",h:14,t:"快"},
+   {n:"目标驱动",h:75,t:"中"},
+   {n:"合作偏好",h:65,t:"中"}]},
+ {k:"d2",n:"节奏",j:"给多少",c:"var(--d2)",it:[
+   {n:"单次时长",h:21,t:"快"},
+   {n:"打扰容忍度",h:18,t:"快"},
+   {n:"任务密度",h:60,t:"中"},
+   {n:"推进方式",h:240,t:"慢"}]},
+ {k:"d1",n:"关系情感",j:"借哪里",c:"var(--d1)",it:[
+   {n:"对象偏好",h:200,t:"慢·可失效"},
+   {n:"陪伴需求",h:70,t:"中"},
+   {n:"回应敏感度",h:60,t:"中"},
+   {n:"关系驱动",h:300,t:"慢"}]},
+ {k:"d4",n:"表达",j:"怎么说",c:"var(--d4)",it:[
+   {n:"表达主动性",h:90,t:"中"},
+   {n:"表达长度",h:400,t:"慢"},
+   {n:"交互方式",h:400,t:"慢"},
+   {n:"情绪外显",h:350,t:"慢"}]}];
+
+var ST=[[70,"k","可沿用","var(--keep)"],[40,"m","待确认","var(--watch)"],[0,"f","需重测","var(--remeas)"]];
+var $=function(i){return document.getElementById(i)};
+var grid=$("grid"), off={}, days=97;
+
+DIMS.forEach(function(d,di){
+  var s=document.createElement("div");
+  s.className="dw-dim"+(d.k==="meta"?" mt":"");
+  var h='<div class="dw-dh"><i style="background:'+d.c+'"></i><b>'+d.n+'</b><span>'+d.j+'</span></div>';
+  d.it.forEach(function(x,ii){
+    h+='<div class="dw-r" id="r'+di+'-'+ii+'"><span class="nm">'+x.n+'<i>'+x.t+'</i></span>'+
+       '<span class="dw-tk"><span class="dw-fl" id="f'+di+'-'+ii+'"></span></span>'+
+       '<span class="dw-pc" id="p'+di+'-'+ii+'"></span><span class="dw-tg" id="s'+di+'-'+ii+'"></span></div>';
+  });
+  s.innerHTML=h; grid.appendChild(s);
+});
+
+$("ctl").innerHTML=[7,30,97,180,365].map(function(v){
+  return '<button data-d="'+v+'">'+v+' 天</button>'}).join("")+
+  '<button class="act" id="rm">执行重测</button>';
+
+function conf(di,ii,x){
+  var b=off[di+"-"+ii]||0;
+  return Math.pow(.5,Math.max(days-b,0)/x.h)*100;
+}
+
+function render(){
+  $("dayOut").textContent=days; $("days").value=days;
+  var bs=document.querySelectorAll('#ctl button[data-d]');
+  for(var i=0;i<bs.length;i++){bs[i].classList.toggle("on",+bs[i].dataset.d===days)}
+  var c=[0,0,0],sum=0,tot=0;
+  DIMS.forEach(function(d,di){d.it.forEach(function(x,ii){
+    var v=conf(di,ii,x);
+    var s=ST.filter(function(y){return v>=y[0]})[0];
+    var idx=ST.indexOf(s);
+    c[idx]++; sum+=v; tot++;
+    var f=$("f"+di+"-"+ii);
+    f.style.width=Math.max(v,2)+"%"; f.style.background=s[3];
+    $("p"+di+"-"+ii).textContent=Math.round(v)+"%";
+    var t=$("s"+di+"-"+ii);
+    t.className="dw-tg "+s[1];
+    t.textContent=(x.t==="慢·可失效"&&days>180&&idx===2)?"可能失效":s[2];
+    $("r"+di+"-"+ii).classList.toggle("fresh",(off[di+"-"+ii]||0)>0&&idx===0);
+  })});
+  [0,1,2].forEach(function(i){$("c"+i).textContent=c[i]});
+  $("aggOut").textContent="画像整体时效 "+Math.round(sum/tot)+"%（未加权）";
+}
+
+$("days").addEventListener("input",function(e){days=+e.target.value;render()});
+$("ctl").addEventListener("click",function(e){
+  var b=e.target.closest("button"); if(!b)return;
+  if(b.id==="rm"){
+    DIMS.forEach(function(d,di){d.it.forEach(function(x,ii){
+      if(conf(di,ii,x)<40) off[di+"-"+ii]=days;
+    })});
+  } else if(b.dataset.d){ days=+b.dataset.d }
+  render();
+});
+render();
+})();
+</script>
+</body>
+</html>
